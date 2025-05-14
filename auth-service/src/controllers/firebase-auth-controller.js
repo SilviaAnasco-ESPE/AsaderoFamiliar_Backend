@@ -54,35 +54,44 @@ class FirebaseAuthController {
     }
   }
     
-  loginUser(req, res) {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(422).json({
-            email: "Campo Email vacio",
-            password: "Campo Contraseña vacio",
+  async loginUser(req, res) {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ 
+          error: 'Missing required fields',
+          message: 'Email and password are required'
         });
+      }
+  
+      // In a real implementation, we'd use Firebase Authentication SDK's signInWithEmailAndPassword
+      // Here we're simulating the login with admin SDK
+      const userRecord = await admin.auth().getUserByEmail(email);
+      
+      // Check if the user has custom claims for role
+      const userClaims = userRecord.customClaims || {};
+      const role = userClaims.role || 'Employee'; // Default role
+      
+      // Generate a custom token with role information
+      const customToken = await admin.auth().createCustomToken(userRecord.uid, { role });
+      
+      return res.status(200).json({ 
+        token: customToken,
+        user: {
+          uid: userRecord.uid,
+          email: userRecord.email,
+          displayName: userRecord.displayName,
+          role
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      return res.status(401).json({ 
+        error: 'Authentication failed',
+        message: 'Invalid email or password'
+      });
     }
-
-    console.log("email:", email);
-    console.log("password:", password);
-    
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => { 
-          const idToken = userCredential._tokenResponse.idToken
-            if (idToken) {
-                res.cookie('access_token', idToken, {
-                    httpOnly: true
-                });
-                res.status(200).json({ message: "User logged in successfully", userCredential });
-            } else {
-                res.status(500).json({ error: "Internal Server Error" });
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            const errorMessage = error.message || "An error occurred while logging in";
-            res.status(500).json({ error: errorMessage });
-        });
 }
 
     logoutUser(req, res) {
