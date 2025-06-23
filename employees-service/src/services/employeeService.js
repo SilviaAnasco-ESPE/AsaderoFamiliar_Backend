@@ -51,6 +51,7 @@ export const getEmployeeById = async (id) => {
 export const createEmployee = async (employeeData) => {
     // Validar que la branchId exista
     const branch = await Branch.findByPk(employeeData.branchId);
+    console.log('branch', branch);
 
     if (!branch) throw new Error('Sucursal no encontrada');
 
@@ -71,6 +72,9 @@ export const createEmployee = async (employeeData) => {
     }
     
     const employee = new Employee(employeeData);
+
+    console.log('employee', employee);
+
     await employee.save();
     return employee;
 };

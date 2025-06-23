@@ -97,9 +97,6 @@ export const Employee = sequelize.define('Employee', {
         fields: ['role']
       },
       {
-        fields: ['isActive'] // Índice para filtrar rápidamente por estado activo
-      },
-      {
         fields: ['firebaseUid'] // Índice para búsquedas rápidas por cuid
       },
       {

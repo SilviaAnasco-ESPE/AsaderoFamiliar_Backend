@@ -18,9 +18,9 @@ app.get('/', (req, res) => {
     res.send('Hello World');
 });
 
+const router = require("./routes");
+app.use('/api',router);
+
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
-
-const router = require("./routes");
-app.use(router);

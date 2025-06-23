@@ -33,6 +33,7 @@ const getEmployeeById = async (req, res, next) => {
 
 const createEmployee = async (req, res, next) => {
     try {
+      console.log('req.body', req.body);
       const employee = await _createEmployee(req.body);
       res.status(201).json(employee);
     } catch (err) {

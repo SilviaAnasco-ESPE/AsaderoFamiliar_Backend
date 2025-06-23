@@ -56,9 +56,6 @@ export const Branch = sequelize.define('Branch', {
         fields: ['city'], // Índice para búsquedas rápidas por ciudad
         using: 'gin',
         operator: 'gin_trgm_ops'
-      },
-      {
-        fields: ['isActive'] // Índice para filtrar rápidamente por estado activo
       }
     ]
   });
