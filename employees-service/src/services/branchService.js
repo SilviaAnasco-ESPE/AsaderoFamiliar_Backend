@@ -49,11 +49,11 @@ export const createBranch = async (branchData) => {
 console.log('branchData', branchData);
     // Validar datos únicos
     const existingBranch = await Branch.findOne({
-        where: { name: branchData.body.name }});
+        where: { name: branchData.name }});
 
     if (existingBranch) throw new Error('Sucursal con este nombre ya existe');
     
-    const branch = new Branch(branchData.body);
+    const branch = new Branch(branchData);
     await branch.save();
     return branch;
 };
@@ -67,17 +67,17 @@ export const updateBranch = async (id, updateData) => {
   
     // Validar cambios únicos SOLO si el valor cambia
     if (
-      updateData.body.name &&
-      updateData.body.name !== branch.name
+      updateData.name &&
+      updateData.name !== branch.name
     ) {
       const exists = await Branch.findOne({
-        where: { name: updateData.body.name }
+        where: { name: updateData.name }
       });
       if (exists) throw new Error('Sucursal con este nombre ya existe');
     }
   
     // Realiza la actualización
-    await branch.update(updateData.body);
+    await branch.update(updateData);
   
     // Devuelve el empleado actualizado
     return branch;
