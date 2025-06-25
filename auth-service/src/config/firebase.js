@@ -14,12 +14,8 @@ firebase.initializeApp(firebaseConfig);
 
 const { 
     getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
     signOut, 
-    sendEmailVerification, 
     sendPasswordResetEmail
-  
 } = require("firebase/auth") ;
 
 const admin = require('firebase-admin');
@@ -31,10 +27,7 @@ admin.initializeApp({
 
 module.exports = {
     getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
     signOut,
-    sendEmailVerification,
     sendPasswordResetEmail,
     admin
 };

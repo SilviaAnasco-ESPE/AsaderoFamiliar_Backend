@@ -1,9 +1,6 @@
 const { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    sendEmailVerification,
+    getAuth,
+    signOut,
     sendPasswordResetEmail
 } = require('../config/firebase.js');
 
@@ -11,89 +8,40 @@ const auth = getAuth();
 const { admin } = require('../config/firebase');
 
 const VALID_ROLES = ['Administrador', 'Supervisor', 'Empleado'];
-const DEFAULT_ROLE = 'Empleado';
 
 class FirebaseAuthController {
-  async registerUser(req, res) {
+  async registerUserRole(req, res) {
     try {
-      const { email, password, displayName, role } = req.body;
+      const { firebaseUid, role } = req.body;
   
-      if (!email || !password || !displayName || !role) {
+      if (!firebaseUid || !role) {
+        console.log('Faltan campos requeridos:', { firebaseUid, role });
         return res.status(400).json({ message: 'Faltan campos requeridos' });
       }
   
       if (!VALID_ROLES.includes(role)) {
-        return res.status(400).json({ message: `Rol inválido. Los roles válidos son: ${VALID_ROLES.join(', ')}` });
+        console.log('Rol inválido:', role);
+        return res.status(400).json({ message: `Rol inválido.` });
       }
   
-      // Crear usuario en Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-  
-      // Enviar correo de verificación
-      await sendEmailVerification(user);
-  
-      // Asignar claims personalizados (rol y nombre)
-      await admin.auth().setCustomUserClaims(user.uid, {
+      // Asignar claims personalizados (rol)
+      await admin.auth().setCustomUserClaims(firebaseUid, {
         role,
-        name: displayName,
         createdAt: new Date().toISOString()
       });
   
       return res.status(201).json({
-        message: 'Usuario creado correctamente. Correo de verificación enviado.',
-        uid: user.uid,
+        message: 'Rol de usuario asignado correctamente.',
         role
       });
   
     } catch (err) {
-      console.error('Error al registrar usuario:', err);
+      console.error('Error al registrar el rol del usuario:', err);
       return res.status(500).json({
-        message: `${err.code || 'Error'} - ${err.message || 'No se pudo crear el usuario'}`
+        message: `${err.code || 'Error'} - ${err.message || 'No se pudo registrar el rol del usuario'}`
       });
     }
   }
-    
-  async loginUser(req, res) {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(422).json({
-            email: "Campo Email vacio",
-            password: "Campo Contraseña vacio",
-        });
-    }
-
-    console.log("email:", email);
-    console.log("password:", password);
-    
-    await signInWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential) => { 
-          const idToken = userCredential._tokenResponse.idToken
-          const uid = userCredential.user.uid
-          const displayName = userCredential.user.displayName;
-
-          const userRecord = await admin.auth().getUser(uid);
-          const userClaims = userRecord.customClaims || {};
-          const role = userClaims.role;
-
-            if (idToken) {
-              return res.status(200).json({
-                token: idToken, // o un customToken si prefieres
-                user: {
-                  displayName: displayName || userRecord.displayName,
-                  role
-                }
-              });
-            } else {
-                res.status(500).json({ error: "Internal Server Error" });
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            const errorMessage = error.message || "An error occurred while logging in";
-            res.status(500).json({ error: errorMessage });
-        });
-}
 
     logoutUser(req, res) {
         signOut(auth)

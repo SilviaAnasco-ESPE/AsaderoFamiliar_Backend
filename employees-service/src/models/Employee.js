@@ -59,7 +59,7 @@ export const Employee = sequelize.define('Employee', {
         }
       },
     role: {
-      type: DataTypes.ENUM('administrador', 'supervisor', 'empleado'),
+      type: DataTypes.ENUM('Administrador', 'Supervisor', 'Empleado'),
       allowNull: false
     },
     charge: {
