@@ -14,7 +14,6 @@ firebase.initializeApp(firebaseConfig);
 
 const { 
     getAuth, 
-    signOut, 
     sendPasswordResetEmail
 } = require("firebase/auth") ;
 
@@ -27,7 +26,6 @@ admin.initializeApp({
 
 module.exports = {
     getAuth,
-    signOut,
     sendPasswordResetEmail,
     admin
 };

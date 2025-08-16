@@ -5,6 +5,8 @@ import {
   deleteOrder as _deleteOrder
 } from '../services/OrderService.js';
 
+import { generateSalesReport as _generateSalesReport } from '../services/ReportService.js';
+
 // Obtener todas las órdenes con detalles y productos
 const getAllOrders = async (req, res) => {
   try {
@@ -35,6 +37,7 @@ const getOrderById = async (req, res, next) => {
 // Crear una nueva orden
 const createOrder = async (req, res, next) => {
   try {
+    console.log("Order Data", req.body)
     const order = await _createOrder(req.body);
     res.status(201).json(order);
   } catch (err) {
@@ -52,9 +55,19 @@ const deleteOrder = async (req, res, next) => {
   }
 };
 
+const generateSalesReport = async (req, res, next) => {
+  try {
+    await _generateSalesReport(req, res);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export {
   getAllOrders,
   getOrderById,
   createOrder,
-  deleteOrder
+  deleteOrder,
+  generateSalesReport
 };
+

@@ -2,6 +2,7 @@ import e from 'express';
 import { 
 getAllEmployees as _getAllEmployees, 
 getEmployeeById as _getEmployeeById,
+getEmployeeIdByEmail as _getEmployeeIdByEmail,
 createEmployee as _createEmployee,
 updateEmployee as _updateEmployee,
 deleteEmployee as _deleteEmployee } from '../services/employeeService.js';
@@ -29,6 +30,16 @@ const getEmployeeById = async (req, res, next) => {
     } catch (err) {
       next(err);
     }
+};
+
+const getEmployeeIdByEmail = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const employeeId = await _getEmployeeIdByEmail(email);
+    res.status(200).json(employeeId);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const createEmployee = async (req, res, next) => {
@@ -62,6 +73,7 @@ const deleteEmployee = async (req, res, next) => {
 export {
     getAllEmployees,
     getEmployeeById,
+    getEmployeeIdByEmail,
     createEmployee,
     updateEmployee,
     deleteEmployee

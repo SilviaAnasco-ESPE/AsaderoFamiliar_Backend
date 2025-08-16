@@ -20,7 +20,8 @@ import {
   getAllOrders,
   getOrderById,
   createOrder,
-  deleteOrder
+  deleteOrder,
+  generateSalesReport
 } from '../controllers/OrderController.js';
 
 const router = express.Router();
@@ -49,5 +50,8 @@ router.get('/orders', getAllOrders);
 router.get('/orders/:id', getOrderById);
 router.post('/orders', createOrder);
 router.delete('/orders/:id', deleteOrder); // opcional: agregar updateOrder si manejas estados
+
+//Report
+router.get('/reports/pdf', generateSalesReport);
 
 export default router;

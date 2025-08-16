@@ -19,6 +19,10 @@ export const Order = sequelize.define('Order', {
       type: DataTypes.UUID,
       allowNull: false
     },
+    employeeId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
   }, {
     tableName: 'order',
     timestamps: true, // Agrega createdAt y updatedAt

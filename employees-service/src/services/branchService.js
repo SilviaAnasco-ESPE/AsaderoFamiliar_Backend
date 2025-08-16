@@ -38,69 +38,70 @@ export const getAllBranches = async ({page, limit, city, isActive}) => {
 };
 
 export const getBranchById = async (id) => {
-    const branch = await Branch.findByPk(id);
-    if (!branch) {
-      throw new Error('Sucursal no encontrada');
-    }
-    return branch;
+  const branch = await Branch.findByPk(id);
+  if (!branch) {
+    throw new Error('Sucursal no encontrada');
+  }
+  return branch;
 };
   
 export const createBranch = async (branchData) => {
-console.log('branchData', branchData);
-    // Validar datos únicos
-    const existingBranch = await Branch.findOne({
-        where: { name: branchData.name }});
+  console.log('branchData', branchData);
+  // Validar datos únicos
+  const existingBranch = await Branch.findOne({
+    where: { name: branchData.name }
+  });
 
-    if (existingBranch) throw new Error('Sucursal con este nombre ya existe');
+  if (existingBranch) throw new Error('Sucursal con este nombre ya existe');
     
-    const branch = new Branch(branchData);
-    await branch.save();
-    return branch;
+  const branch = new Branch(branchData);
+  await branch.save();
+  return branch;
 };
 
 export const updateBranch = async (id, updateData) => {
-    // Buscar al empleado actual
-    const branch = await Branch.findByPk(id);
-    if (!branch) {
-      throw new Error('Sucursal no encontrada');
-    }
+  // Buscar al empleado actual
+  const branch = await Branch.findByPk(id);
+  if (!branch) {
+    throw new Error('Sucursal no encontrada');
+  }
   
-    // Validar cambios únicos SOLO si el valor cambia
-    if (
-      updateData.name &&
-      updateData.name !== branch.name
-    ) {
-      const exists = await Branch.findOne({
-        where: { name: updateData.name }
-      });
-      if (exists) throw new Error('Sucursal con este nombre ya existe');
-    }
+  // Validar cambios únicos SOLO si el valor cambia
+  if (
+    updateData.name &&
+    updateData.name !== branch.name
+  ) {
+    const exists = await Branch.findOne({
+      where: { name: updateData.name }
+    });
+    if (exists) throw new Error('Sucursal con este nombre ya existe');
+  }
   
-    // Realiza la actualización
-    await branch.update(updateData);
+  // Realiza la actualización
+  await branch.update(updateData);
   
-    // Devuelve el empleado actualizado
-    return branch;
-  };
+  // Devuelve el empleado actualizado
+  return branch;
+};
   
 export const deleteBranch = async (id) => {
-    // Verifica si existen empleados asignados a la sucursal
-    const employeesCount = await Employee.count({
-        where: { branchId: id }
-    });
+  // Verifica si existen empleados asignados a la sucursal
+  const employeesCount = await Employee.count({
+    where: { branchId: id }
+  });
 
-    if (employeesCount > 0) {
-        throw new Error('No se puede eliminar la sucursal porque tiene empleados asociados');
-    }
+  if (employeesCount > 0) {
+    throw new Error('No se puede eliminar la sucursal porque tiene empleados asociados');
+  }
 
-    const deleted = await Branch.destroy({
-      where: { id }
-    });
+  const deleted = await Branch.destroy({
+    where: { id }
+  });
     
-    if (deleted === 0) {
-      throw new Error('Sucursal no encontrada');
-    }
+  if (deleted === 0) {
+    throw new Error('Sucursal no encontrada');
+  }
     
-    return { message: 'Sucursal eliminada' };
+  return { message: 'Sucursal eliminada' };
 };
   

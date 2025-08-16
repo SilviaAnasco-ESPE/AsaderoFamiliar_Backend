@@ -2,6 +2,7 @@ import '../models/index.js';
 import { Order } from '../models/Order.js';
 import { OrderDetail } from '../models/OrderDetails.js';
 import { Product } from '../models/Product.js';
+import { Sequelize } from 'sequelize';
 
 
 // Obtener todas las órdenes con detalles y productos
@@ -64,7 +65,7 @@ export const getOrderById = async (id) => {
 };
 
 // Crear una nueva orden con sus detalles
-export const createOrder = async ({ customerId, items }) => {
+export const createOrder = async ({ employeeId, customerId, items }) => {
   /*
     items = [
       { productId: 'uuid', quantity: 2 },
@@ -98,7 +99,8 @@ export const createOrder = async ({ customerId, items }) => {
   // Crear orden
   const newOrder = await Order.create({
     total,
-    customerId
+    customerId,
+    employeeId
   });
 
   // Crear detalles
@@ -121,4 +123,51 @@ export const deleteOrder = async (id) => {
   }
 
   return { message: 'Orden eliminada correctamente' };
+};
+
+// 👑 Cliente que más ha comprado
+export const getTopCustomer = async () => {
+  const result = await Order.findAll({
+    attributes: [
+      'customerId',
+      [Sequelize.fn('SUM', Sequelize.col('total')), 'total_comprado']
+    ],
+    group: ['customerId'],
+    order: [[Sequelize.literal('"total_comprado"'), 'DESC']],
+    limit: 1,
+    raw: true
+  });
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  return {
+    customer: result[0].customerId ? result[0].customerId : null,
+    totalComprado: result[0].total_comprado
+  };
+};
+
+// 👑 Producto más vendido
+export const getTopProduct = async () => {
+  const result = await OrderDetail.findAll({
+    attributes: [
+      'productId',
+      [Sequelize.fn('SUM', Sequelize.col('quantity')), 'cantidad_vendida']
+    ],
+    group: ['productId'],
+    order: [[Sequelize.literal('"cantidad_vendida"'), 'DESC']],
+    limit: 1,
+    raw: true
+  });
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  const topProduct = await Product.findByPk(result[0].productId);
+  return {
+    product: topProduct,
+    cantidadVendida: result[0].cantidad_vendida
+  };
 };

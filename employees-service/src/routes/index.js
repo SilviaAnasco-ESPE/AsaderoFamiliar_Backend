@@ -2,6 +2,7 @@ import express from 'express';
 import { 
     getAllEmployees, 
     getEmployeeById,
+    getEmployeeIdByEmail,
     createEmployee,
     updateEmployee,
     deleteEmployee
@@ -24,6 +25,7 @@ router.get('/health', (req, res) => {
 // Employee routes
 router.get('/employees', getAllEmployees);
 router.get('/employees/:id', getEmployeeById);
+router.post('/employees/by-email', getEmployeeIdByEmail);
 router.post('/employees', createEmployee);
 router.put('/employees/:id', updateEmployee);   
 router.delete('/employees/:id', deleteEmployee);

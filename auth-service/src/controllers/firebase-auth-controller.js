@@ -1,11 +1,10 @@
 const { 
     getAuth,
-    signOut,
     sendPasswordResetEmail
 } = require('../config/firebase.js');
 
 const auth = getAuth();
-const { admin } = require('../config/firebase');
+const { admin } = require('../config/firebase.js');
 
 const VALID_ROLES = ['Administrador', 'Supervisor', 'Empleado'];
 
@@ -43,7 +42,23 @@ class FirebaseAuthController {
     }
   }
 
-    logoutUser(req, res) {
+  async deleteUserAccount(req, res) {
+    const { firebaseUid } = req.body;
+
+    if (!firebaseUid) {
+      return res.status(400).json({ message: "firebaseUid is required" });
+    }
+
+    try {
+      await admin.auth().deleteUser(firebaseUid);
+      return res.status(200).json({ message: `User with UID ${firebaseUid} deleted successfully.` });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return res.status(500).json({ error: `${error.code || 'Error'} - ${error.message || 'Could not delete user'}` });
+    }
+  }
+
+  async logoutUser(req, res) {
         signOut(auth)
           .then(() => {
             res.clearCookie('access_token');
@@ -55,7 +70,7 @@ class FirebaseAuthController {
           });
     }
 
-    resetPassword(req, res){
+    async resetPassword(req, res){
         const { email } = req.body;
         if (!email ) {
           return res.status(422).json({

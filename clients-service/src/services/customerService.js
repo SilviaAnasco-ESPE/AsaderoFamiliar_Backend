@@ -40,7 +40,8 @@ export const getCustomerById = async (id) => {
 };
   
 export const createCustomer = async (customerData) => {
-    // Validar datos únicos
+  console.log('Datos del cliente:', customerData);  
+  // Validar datos únicos
     const existingCustomer = await Customer.findOne({
         where: { email: customerData.email }
       });
@@ -52,36 +53,36 @@ export const createCustomer = async (customerData) => {
 };
 
 export const updateCustomer = async (id, updateData) => {
-    // Buscar al cliente actual
-    const customer = await Customer.findByPk(id);
-    if (!customer) {
-      throw new Error('Cliente no encontrado');
-    }
+  // Buscar al cliente actual
+  const customer = await Customer.findByPk(id);
+  if (!customer) {
+    throw new Error('Cliente no encontrado');
+  }
   
-    // Validar cambios únicos SOLO si el valor cambia
-    if (updateData.email && updateData.email !== customer.email) {
-      const exists = await Customer.findOne({
-        where: { email: updateData.email }
-      });
-      if (exists) throw new Error('Cliente con este correo ya existe');
-    }
+  // Validar cambios únicos SOLO si el valor cambia
+  if (updateData.email && updateData.email !== customer.email) {
+    const exists = await Customer.findOne({
+      where: { email: updateData.email }
+    });
+    if (exists) throw new Error('Cliente con este correo ya existe');
+  }
   
-    // Realiza la actualización
-    await customer.update(updateData);
+  // Realiza la actualización
+  await customer.update(updateData);
   
-    // Devuelve el empleado actualizado
-    return customer;
-  };
+  // Devuelve el empleado actualizado
+  return customer;
+};
   
 export const deleteCustomer = async (id) => {
-    const deleted = await Customer.destroy({
-      where: { id }
-    });
+  const deleted = await Customer.destroy({
+    where: { id }
+  });
     
-    if (deleted === 0) {
-      throw new Error('Cliente no encontrado');
-    }
+  if (deleted === 0) {
+    throw new Error('Cliente no encontrado');
+  }
     
-    return { message: 'Cliente eliminado' };
-  };
+  return { message: 'Cliente eliminado' };
+};
   
